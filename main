@@ -1,5 +1,5 @@
 -- ==========================================
--- SANSİK UI LIBRARY (v1.0)
+-- SANSİK UI LIBRARY (v1.1 - Fixed)
 -- Создано для Real Executor. Заливай на GitHub и юзай через loadstring.
 -- ==========================================
 
@@ -65,7 +65,7 @@ end
 -- ==========================================
 function SansikUI:CreateWindow(config)
     local Window = {}
-    
+
     -- Плашка (Свернутое состояние)
     local ToggleBtn = create("TextButton", {
         Name = "ToggleBtn",
@@ -228,7 +228,7 @@ function SansikUI:CreateWindow(config)
     -- API: Создание вкладки
     function Window:CreateTab(tabConfig)
         local Tab = { Name = tabConfig.Name, Buttons = {} }
-        
+
         local TabBtn = create("TextButton", {
             BackgroundColor3 = Theme.Background,
             Size = UDim2.new(1, 0, 0, 30),
@@ -256,11 +256,11 @@ function SansikUI:CreateWindow(config)
             Visible = false,
             Parent = ContentContainer
         })
-        
+
         table.insert(Tabs, Tab)
         Tab.TabBtn = TabBtn
         Tab.TabContent = TabContent
-        
+
         TabBtn.MouseButton1Click:Connect(function()
             if ActiveTab then
                 ActiveTab.TabContent.Visible = false
@@ -277,9 +277,12 @@ function SansikUI:CreateWindow(config)
 
         Tab.TabStroke = TabStroke
 
-        -- Если это первая вкладка, открываем её
+        -- Если это первая вкладка, открываем её (ИСПРАВЛЕНО)
         if #Tabs == 1 then
-            TabBtn:Fire("MouseButton1Click")
+            task.spawn(function()
+                task.wait(0.1)
+                TabBtn:Click()
+            end)
         end
 
         -- API вкладки: Создание секции
@@ -349,7 +352,7 @@ function SansikUI:CreateWindow(config)
                 Parent = TabContent
             })
             corner(ToggleFrame, 6)
-            
+
             create("TextLabel", {
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, -60, 1, 0),
@@ -449,10 +452,10 @@ function SansikUI:CreateWindow(config)
                 local relativeX = math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
                 local value = sliderConfig.Range[1] + (relativeX * (sliderConfig.Range[2] - sliderConfig.Range[1]))
                 value = math.floor(value / (sliderConfig.Increment or 1)) * (sliderConfig.Increment or 1)
-                
+
                 SliderFill.Size = UDim2.new(relativeX, 0, 1, 0)
                 SliderText.Text = sliderConfig.Name .. ": " .. tostring(value) .. (sliderConfig.Suffix or "")
-                
+
                 if sliderConfig.Callback then sliderConfig.Callback(value) end
             end
 
